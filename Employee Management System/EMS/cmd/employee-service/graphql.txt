@@ -1,0 +1,286 @@
+Let's test Employee Pagination, Filtering and Sorting in GraphiQL.
+
+Your Employee GraphQL fields use `snake_case`, so use the following queries.
+
+GraphQL URL: `http://localhost:8082/graphql`
+
+## 1. Pagination
+
+Test 1: Default pagination
+
+```
+query {
+  employees {
+    employees {
+      id
+      name
+      email
+      department_id
+    }
+    pagination {
+      total_records
+      current_page
+      page_size
+      total_pages
+    }
+  }
+}
+```
+
+Test 2: Page 1, 2 employees
+
+```
+query {
+  employees(query: {
+    page: 1
+    limit: 2
+  }) {
+    employees {
+      id
+      name
+      email
+    }
+    pagination {
+      total_records
+      current_page
+      page_size
+      total_pages
+    }
+  }
+}
+```
+
+Test 3: Page 2, 2 employees
+
+```
+query {
+  employees(query: {
+    page: 2
+    limit: 2
+  }) {
+    employees {
+      id
+      name
+      email
+    }
+    pagination {
+      total_records
+      current_page
+      page_size
+      total_pages
+    }
+  }
+}
+```
+
+## 2. Filtering
+
+Test 4: Filter by name
+
+```
+query {
+  employees(query: {
+    name: "Rahul"
+  }) {
+    employees {
+      id
+      name
+      email
+    }
+  }
+}
+```
+
+Test 5: Filter by email
+
+```
+query {
+  employees(query: {
+    email: "example.com"
+  }) {
+    employees {
+      id
+      name
+      email
+    }
+  }
+}
+```
+
+Test 6: Filter by department ID
+
+```
+query {
+  employees(query: {
+    department_id: 1
+  }) {
+    employees {
+      id
+      name
+      email
+      department_id
+    }
+  }
+}
+```
+
+## 3. Sorting
+
+Test 7: Sort by name ascending
+
+```
+query {
+  employees(query: {
+    sort_by: "name"
+    sort_order: "asc"
+  }) {
+    employees {
+      id
+      name
+    }
+  }
+}
+```
+
+Test 8: Sort by name descending
+
+```
+query {
+  employees(query: {
+    sort_by: "name"
+    sort_order: "desc"
+  }) {
+    employees {
+      id
+      name
+    }
+  }
+}
+```
+
+Test 9: Sort by ID descending
+
+```
+query {
+  employees(query: {
+    sort_by: "id"
+    sort_order: "desc"
+  }) {
+    employees {
+      id
+      name
+    }
+  }
+}
+```
+
+## 4. Combine all parameters
+
+You can combine pagination, filtering and sorting in one query.
+
+Test 10: Name + pagination + sorting
+
+```
+query {
+  employees(query: {
+    name: "a"
+    page: 1
+    limit: 3
+    sort_by: "name"
+    sort_order: "asc"
+  }) {
+    employees {
+      id
+      name
+      email
+    }
+    pagination {
+      total_records
+      current_page
+      page_size
+      total_pages
+    }
+  }
+}
+```
+
+Test 11: Email + department + pagination
+
+```
+query {
+  employees(query: {
+    email: "example.com"
+    department_id: 1
+    page: 1
+    limit: 2
+  }) {
+    employees {
+      id
+      name
+      email
+      department_id
+    }
+    pagination {
+      total_records
+      current_page
+      page_size
+      total_pages
+    }
+  }
+}
+```
+
+Test 12: All filters + pagination + sorting
+
+```
+query {
+  employees(query: {
+    name: "a"
+    email: "example.com"
+    department_id: 1
+    page: 1
+    limit: 5
+    sort_by: "created_at"
+    sort_order: "desc"
+  }) {
+    employees {
+      id
+      name
+      email
+      department_id
+      created_at
+    }
+    pagination {
+      total_records
+      current_page
+      page_size
+      total_pages
+    }
+  }
+}
+```
+
+## 5. Sorting options to test
+
+| Sort field   | Ascending | Descending |
+| ------------ | --------- | ---------- |
+| ID           | `asc`     | `desc`     |
+| Name         | `asc`     | `desc`     |
+| Email        | `asc`     | `desc`     |
+| Created date | `asc`     | `desc`     |
+
+## 6. Important combination tests
+
+Try these combinations too:
+
+- Name + Email
+- Name + Department ID
+- Email + Department ID
+- Name + Email + Department ID
+- Pagination + Sorting
+- Filtering + Sorting
+- Filtering + Pagination + Sorting
+
+Expected behaviour: All parameters are optional. If omitted, your service should use page `1`, limit `10`, sort by `id`, and sort order `asc`. The filters should work together using AND conditions.
+
+Run these queries in order. If any query returns a GraphQL error, share the exact error before changing the Go code.

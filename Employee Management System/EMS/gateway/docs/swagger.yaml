@@ -1,0 +1,655 @@
+basePath: /
+definitions:
+  main.SwaggerDepartment:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  main.SwaggerDepartmentDeleteResponse:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  main.SwaggerDepartmentListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/main.SwaggerDepartment'
+        type: array
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  main.SwaggerDepartmentRequest:
+    properties:
+      name:
+        example: IT
+        type: string
+    type: object
+  main.SwaggerDepartmentResponse:
+    properties:
+      data:
+        $ref: '#/definitions/main.SwaggerDepartment'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  main.SwaggerEmployeeDeleteResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  main.SwaggerEmployeeListResponse:
+    properties:
+      employees:
+        items:
+          $ref: '#/definitions/main.SwaggerEmployeeResponse'
+        type: array
+      pagination:
+        $ref: '#/definitions/main.SwaggerPaginationResponse'
+    type: object
+  main.SwaggerEmployeeRequest:
+    properties:
+      department_id:
+        example: 1
+        type: integer
+      email:
+        example: john@example.com
+        type: string
+      name:
+        example: John
+        type: string
+    type: object
+  main.SwaggerEmployeeResponse:
+    properties:
+      created_at:
+        type: string
+      department_id:
+        type: integer
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  main.SwaggerErrorResponse:
+    properties:
+      correlation_id:
+        type: string
+      message:
+        type: string
+      request_id:
+        type: string
+      success:
+        type: boolean
+    type: object
+  main.SwaggerGatewayErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  main.SwaggerGraphQLError:
+    properties:
+      message:
+        type: string
+    type: object
+  main.SwaggerGraphQLRequest:
+    properties:
+      operationName:
+        type: string
+      query:
+        example: query { employees { employees { id name email } } }
+        type: string
+      variables:
+        additionalProperties: true
+        type: object
+    type: object
+  main.SwaggerGraphQLResponse:
+    properties:
+      data:
+        additionalProperties: true
+        type: object
+      errors:
+        items:
+          $ref: '#/definitions/main.SwaggerGraphQLError'
+        type: array
+    type: object
+  main.SwaggerLoginData:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      role:
+        type: string
+      token_type:
+        type: string
+      username:
+        type: string
+    type: object
+  main.SwaggerLoginRequest:
+    properties:
+      password:
+        example: admin@123
+        type: string
+      username:
+        example: admin
+        type: string
+    type: object
+  main.SwaggerLoginResponse:
+    properties:
+      data:
+        $ref: '#/definitions/main.SwaggerLoginData'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  main.SwaggerPaginationResponse:
+    properties:
+      current_page:
+        type: integer
+      page_size:
+        type: integer
+      total_pages:
+        type: integer
+      total_records:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Central API Gateway for Authentication, Employee and Department services.
+  title: Employee Management System API Gateway
+  version: "1.0"
+paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate using username and password.
+      parameters:
+      - description: Login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/main.SwaggerLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerLoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+      summary: Login
+      tags:
+      - Auth
+  /api/departments:
+    get:
+      description: Retrieve all departments.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerDepartmentListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all departments
+      tags:
+      - Department
+    post:
+      consumes:
+      - application/json
+      description: Create a department. Admin access required.
+      parameters:
+      - description: Department details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/main.SwaggerDepartmentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.SwaggerDepartmentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create department
+      tags:
+      - Department
+  /api/departments/{id}:
+    delete:
+      description: Delete a department. Admin access required.
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerDepartmentDeleteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete department
+      tags:
+      - Department
+    get:
+      description: Retrieve a department using department ID.
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerDepartmentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get department by ID
+      tags:
+      - Department
+    put:
+      consumes:
+      - application/json
+      description: Update a department. Admin access required.
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated department details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/main.SwaggerDepartmentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerDepartmentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update department
+      tags:
+      - Department
+  /api/employees:
+    get:
+      description: Retrieve employees with pagination, filtering and sorting.
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Records per page (maximum 100)
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by employee name
+        in: query
+        name: name
+        type: string
+      - description: Filter by employee email
+        in: query
+        name: email
+        type: string
+      - description: Filter by department ID
+        in: query
+        name: department_id
+        type: integer
+      - description: 'Sort field: id, name, email, created_at'
+        in: query
+        name: sort_by
+        type: string
+      - description: 'Sort order: asc or desc'
+        in: query
+        name: sort_order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEmployeeListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get all employees
+      tags:
+      - Employee
+    post:
+      consumes:
+      - application/json
+      description: Create a new employee. Admin access required.
+      parameters:
+      - description: Employee details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/main.SwaggerEmployeeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.SwaggerEmployeeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create employee
+      tags:
+      - Employee
+  /api/employees/{id}:
+    delete:
+      description: Delete an employee. Admin access required.
+      parameters:
+      - description: Employee ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEmployeeDeleteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete employee
+      tags:
+      - Employee
+    get:
+      description: Retrieve an employee using employee ID.
+      parameters:
+      - description: Employee ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEmployeeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get employee by ID
+      tags:
+      - Employee
+    put:
+      consumes:
+      - application/json
+      description: Update an existing employee. Admin access required.
+      parameters:
+      - description: Employee ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated employee details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/main.SwaggerEmployeeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerEmployeeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update employee
+      tags:
+      - Employee
+  /graphql:
+    post:
+      consumes:
+      - application/json
+      description: Execute Employee or Department GraphQL queries and mutations. A
+        valid JWT is required. Employees can execute queries only. Administrators
+        can execute queries and mutations. Employee and Department root fields must
+        be requested in separate operations.
+      parameters:
+      - description: GraphQL query and variables
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/main.SwaggerGraphQLRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SwaggerGraphQLResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.SwaggerErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+        "504":
+          description: Gateway Timeout
+          schema:
+            $ref: '#/definitions/main.SwaggerGatewayErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Gateway GraphQL endpoint
+      tags:
+      - GraphQL
+schemes:
+- http
+securityDefinitions:
+  BearerAuth:
+    description: Enter Bearer followed by your JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

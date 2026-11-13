@@ -1,0 +1,59 @@
+
+version: 0.2
+
+env:
+  variables:
+    GOOS: linux
+    GOARCH: amd64
+    CGO_ENABLED: "0"
+    GOTOOLCHAIN: auto
+
+phases:
+  install:
+    runtime-versions:
+      golang: 1.24
+    commands:
+      - go version
+
+  pre_build:
+    commands:
+      - go mod download
+      - go mod verify
+      - go version
+
+  build:
+    commands:
+      - mkdir -p dist/api-gateway
+      - mkdir -p dist/auth-service
+      - mkdir -p dist/employee-service
+      - mkdir -p dist/department-service
+
+      - go build -o dist/api-gateway/api-gateway ./cmd/api-gateway
+      - go build -o dist/auth-service/auth-service ./cmd/auth-service
+      - go build -o dist/employee-service/employee-service ./cmd/employee-service
+      - go build -o dist/department-service/department-service ./cmd/department-service
+
+  post_build:
+    commands:
+      - printf 'web: ./api-gateway\n' > dist/api-gateway/Procfile
+      - printf 'web: ./auth-service\n' > dist/auth-service/Procfile
+      - printf 'web: ./employee-service\n' > dist/employee-service/Procfile
+      - printf 'web: ./department-service\n' > dist/department-service/Procfile
+
+      - cd dist/api-gateway && zip -r ../api-gateway.zip . && cd ../..
+      - cd dist/auth-service && zip -r ../auth-service.zip . && cd ../..
+      - cd dist/employee-service && zip -r ../employee-service.zip . && cd ../..
+      - cd dist/department-service && zip -r ../department-service.zip . && cd ../..
+
+      - test -s dist/api-gateway.zip
+      - test -s dist/auth-service.zip
+      - test -s dist/employee-service.zip
+      - test -s dist/department-service.zip
+
+      - echo "All four EMS services built and packaged successfully"
+
+artifacts:
+  base-directory: dist
+  files:
+    - "*.zip"
+  discard-paths: yes

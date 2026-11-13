@@ -1,0 +1,186 @@
+basePath: /
+definitions:
+  EMS_services_department_dto.CreateDepartmentRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  EMS_services_department_dto.UpdateDepartmentRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  EMS_shared_errors.ErrorResponse:
+    properties:
+      correlation_id:
+        type: string
+      message:
+        type: string
+      request_id:
+        type: string
+      success:
+        type: boolean
+    type: object
+info:
+  contact: {}
+  description: REST API documentation for the Department Service.
+  title: Department Service API
+  version: "1.0"
+paths:
+  /api/departments:
+    get:
+      description: Retrieves all departments.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Departments retrieved
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/EMS_shared_errors.ErrorResponse'
+      summary: Get all departments
+      tags:
+      - Departments
+    post:
+      consumes:
+      - application/json
+      description: Creates a new department.
+      parameters:
+      - description: Department details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/EMS_services_department_dto.CreateDepartmentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Department created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/EMS_shared_errors.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/EMS_shared_errors.ErrorResponse'
+      summary: Create department
+      tags:
+      - Departments
+  /api/departments/{id}:
+    delete:
+      description: Deletes a department using its department ID.
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Department deleted
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid department ID
+          schema:
+            $ref: '#/definitions/EMS_shared_errors.ErrorResponse'
+        "404":
+          description: Department not found
+          schema:
+            $ref: '#/definitions/EMS_shared_errors.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/EMS_shared_errors.ErrorResponse'
+      summary: Delete department
+      tags:
+      - Departments
+    get:
+      description: Retrieves a department using its department ID.
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Department retrieved
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid department ID
+          schema:
+            $ref: '#/definitions/EMS_shared_errors.ErrorResponse'
+        "404":
+          description: Department not found
+          schema:
+            $ref: '#/definitions/EMS_shared_errors.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/EMS_shared_errors.ErrorResponse'
+      summary: Get department by ID
+      tags:
+      - Departments
+    put:
+      consumes:
+      - application/json
+      description: Updates a department using its department ID.
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated department details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/EMS_services_department_dto.UpdateDepartmentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Department updated
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/EMS_shared_errors.ErrorResponse'
+        "404":
+          description: Department not found
+          schema:
+            $ref: '#/definitions/EMS_shared_errors.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/EMS_shared_errors.ErrorResponse'
+      summary: Update department
+      tags:
+      - Departments
+schemes:
+- http
+swagger: "2.0"

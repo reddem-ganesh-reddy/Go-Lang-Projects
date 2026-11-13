@@ -1,0 +1,4 @@
+web: ./bin/api-gateway
+auth_service: ./bin/auth-service
+employee_service: ./bin/employee-service
+department_service: ./bin/department-service

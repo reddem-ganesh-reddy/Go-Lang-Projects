@@ -1,0 +1,36 @@
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Go binaries and build output
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+/bin/
+/bin
+/bins/
+/bins
+/dist/
+/build/
+
+# Process ID files
+/pids/
+/pids
+*.pid
+*.pid.lock
+
+# Test files
+coverage.out
+coverage.html
+
+# IDE files
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
